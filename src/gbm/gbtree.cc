@@ -229,7 +229,7 @@ class GBTree : public GradientBooster {
                            std::vector<bst_float>* out_contribs,
                            unsigned ntree_limit, bool approximate, int condition,
                            unsigned condition_feature) override {
-    predictor_->PredictContribution(p_fmat, out_contribs, model_, ntree_limit, approximate);
+    predictor_->PredictContribution(p_fmat, out_contribs, model_, ntree_limit, nullptr, approximate);
   }
 
   void PredictInteractionContributions(DMatrix* p_fmat,
@@ -370,6 +370,13 @@ class Dart : public GBTree {
           = PredValue(inst, gid, root_index,
                       &thread_temp_[0], 0, ntree_limit) + model_.base_margin;
     }
+  }
+
+  void PredictContribution(DMatrix* p_fmat,
+                           std::vector<bst_float>* out_contribs,
+                           unsigned ntree_limit, bool approximate, int condition,
+                           unsigned condition_feature) override {
+    predictor_->PredictContribution(p_fmat, out_contribs, model_, ntree_limit, &weight_drop_, approximate);
   }
 
  protected:
